@@ -1,0 +1,814 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Email a Portuguese Personality</title>
+<style>
+  :root {
+    --bg: #f7f5f0;
+    --surface: #ffffff;
+    --surface-2: #f1efe8;
+    --border: rgba(0, 0, 0, 0.12);
+    --border-strong: rgba(0, 0, 0, 0.22);
+    --text: #1a1a1a;
+    --text-muted: #5f5e5a;
+    --text-faint: #888780;
+    --accent: #185fa5;
+    --accent-bg: #E6F1FB;
+    --success: #1d9e75;
+    --success-bg: #E1F5EE;
+    --danger: #a32d2d;
+    --danger-bg: #FCEBEB;
+    --amber: #854f0b;
+    --amber-bg: #FAEEDA;
+    --purple: #534ab7;
+    --purple-bg: #EEEDFE;
+    --radius-md: 8px;
+    --radius-lg: 12px;
+    --font: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: var(--font);
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.55;
+    font-size: 15px;
+  }
+  .container {
+    max-width: 760px;
+    margin: 0 auto;
+    padding: 24px 18px 60px;
+  }
+  .lang-bar {
+    display: flex;
+    gap: 6px;
+    justify-content: flex-end;
+    margin-bottom: 16px;
+  }
+  .lang-btn {
+    padding: 5px 12px;
+    font-size: 12px;
+    border-radius: var(--radius-md);
+    border: 1px solid var(--border);
+    background: transparent;
+    cursor: pointer;
+    color: var(--text-muted);
+    font-family: inherit;
+  }
+  .lang-btn.active {
+    background: var(--accent-bg);
+    color: var(--accent);
+    border-color: var(--accent);
+  }
+  h1 { font-size: 26px; font-weight: 500; margin: 0 0 4px; }
+  .subtitle { font-size: 14px; color: var(--text-muted); margin: 0 0 24px; }
+  .grid-people {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+    gap: 10px;
+    margin-bottom: 24px;
+  }
+  .person-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 12px;
+    cursor: pointer;
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    transition: border-color 0.15s, background 0.15s;
+  }
+  .person-card:hover { border-color: var(--border-strong); }
+  .person-card.selected {
+    border: 2px solid var(--accent);
+    padding: 11px;
+  }
+  .avatar {
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 500;
+    font-size: 13px;
+    flex-shrink: 0;
+  }
+  .person-name { font-size: 14px; font-weight: 500; margin: 0; line-height: 1.2; }
+  .person-role { font-size: 12px; color: var(--text-muted); margin: 2px 0 0; line-height: 1.3; }
+  .bio-card {
+    background: var(--surface-2);
+    border-radius: var(--radius-lg);
+    padding: 14px 16px;
+    margin-bottom: 20px;
+    font-size: 14px;
+    line-height: 1.6;
+  }
+  .bio-title { font-weight: 500; margin: 0 0 6px; font-size: 15px; }
+  .compose-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 16px;
+    margin-bottom: 16px;
+  }
+  .field-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 0;
+    border-bottom: 1px solid var(--border);
+  }
+  .field-label {
+    font-size: 13px;
+    color: var(--text-muted);
+    width: 80px;
+    flex-shrink: 0;
+  }
+  .field-value { font-size: 14px; flex: 1; }
+  .text-input, .message-input {
+    width: 100%;
+    border: none;
+    outline: none;
+    background: transparent;
+    font-family: inherit;
+    font-size: 14px;
+    color: var(--text);
+    padding: 4px 0;
+  }
+  .message-input {
+    min-height: 130px;
+    resize: vertical;
+    line-height: 1.6;
+    margin-top: 10px;
+    padding: 8px 0;
+  }
+  .action-row {
+    display: flex;
+    gap: 10px;
+    justify-content: flex-end;
+    margin-top: 12px;
+    align-items: center;
+    flex-wrap: wrap;
+  }
+  .status {
+    font-size: 13px;
+    color: var(--text-muted);
+    margin-right: auto;
+  }
+  .send-btn {
+    padding: 9px 18px;
+    background: var(--text);
+    color: white;
+    border: none;
+    border-radius: var(--radius-md);
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    font-family: inherit;
+  }
+  .send-btn:disabled { opacity: 0.45; cursor: not-allowed; }
+  .send-btn:hover:not(:disabled) { opacity: 0.88; }
+  .placeholder {
+    text-align: center;
+    padding: 18px;
+    color: var(--text-muted);
+    font-size: 14px;
+    background: var(--surface-2);
+    border-radius: var(--radius-lg);
+    margin-bottom: 20px;
+  }
+  .reply-card, .feedback-card, .quote-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 16px;
+    margin-bottom: 14px;
+  }
+  .reply-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 14px;
+  }
+  .reply-from { font-size: 14px; font-weight: 500; margin: 0; }
+  .reply-meta { font-size: 12px; color: var(--text-muted); margin: 2px 0 0; }
+  .reply-body { font-size: 14px; line-height: 1.75; white-space: pre-wrap; }
+  .section-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-weight: 500;
+    font-size: 14px;
+    margin: 0 0 10px;
+  }
+  .feedback-card { border-left: 3px solid var(--purple); }
+  .feedback-card .section-header { color: var(--purple); }
+  .feedback-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+    gap: 8px;
+    margin-bottom: 12px;
+  }
+  .feedback-metric {
+    background: var(--purple-bg);
+    padding: 8px 10px;
+    border-radius: var(--radius-md);
+  }
+  .feedback-metric .label {
+    font-size: 11px;
+    color: var(--purple);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 2px;
+  }
+  .feedback-metric .value {
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--text);
+  }
+  .feedback-section { margin-bottom: 10px; }
+  .feedback-section:last-child { margin-bottom: 0; }
+  .feedback-section .title {
+    font-size: 13px;
+    color: var(--text-muted);
+    font-weight: 500;
+    margin: 0 0 4px;
+  }
+  .feedback-section ul { margin: 0; padding-left: 18px; font-size: 13.5px; line-height: 1.6; }
+  .feedback-section ul li { margin-bottom: 3px; }
+  .feedback-section p { margin: 0; font-size: 13.5px; line-height: 1.6; }
+  .quote-card {
+    background: var(--surface-2);
+    border-left: 3px solid var(--amber);
+    font-family: Georgia, serif;
+  }
+  .quote-card .quote-text {
+    font-size: 16px;
+    line-height: 1.6;
+    font-style: italic;
+    margin: 0 0 8px;
+    color: var(--text);
+  }
+  .quote-card .quote-author {
+    font-size: 13px;
+    color: var(--text-muted);
+    font-family: var(--font);
+    margin: 0;
+  }
+  .error-box {
+    color: var(--danger);
+    font-size: 13px;
+    padding: 8px 12px;
+    background: var(--danger-bg);
+    border-radius: var(--radius-md);
+  }
+  .debug-line {
+    font-size: 11px;
+    color: var(--text-faint);
+    margin-top: 6px;
+    font-family: monospace;
+    word-break: break-all;
+  }
+  .loading-dots::after {
+    content: '';
+    animation: dots 1.5s steps(4, end) infinite;
+  }
+  @keyframes dots {
+    0%, 20% { content: ''; }
+    40% { content: '.'; }
+    60% { content: '..'; }
+    80%, 100% { content: '...'; }
+  }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <div class="lang-bar">
+    <button class="lang-btn active" data-lang="en">English</button>
+    <button class="lang-btn" data-lang="ro">Română</button>
+    <button class="lang-btn" data-lang="pt">Português</button>
+  </div>
+
+  <h1 id="appTitle">Write to a Portuguese personality</h1>
+  <p class="subtitle" id="appSubtitle">Pick a person, write your email, and receive a reply, an assessment, and a motivational quote.</p>
+
+  <div class="grid-people" id="peopleGrid"></div>
+  <div id="bioBox"></div>
+
+  <div class="compose-card" id="composeCard" style="display:none;">
+    <div class="field-row">
+      <span class="field-label" id="lblFrom">From</span>
+      <input class="text-input" id="fromInput" placeholder="your.name@school.com" />
+    </div>
+    <div class="field-row">
+      <span class="field-label" id="lblTo">To</span>
+      <span class="field-value" id="toValue"></span>
+    </div>
+    <div class="field-row">
+      <span class="field-label" id="lblSubject">Subject</span>
+      <input class="text-input" id="subjectInput" placeholder="Your subject here..." />
+    </div>
+    <textarea class="message-input" id="messageInput" placeholder="Write your message here..."></textarea>
+    <div class="action-row">
+      <span class="status" id="statusText"></span>
+      <button class="send-btn" id="sendBtn"><span id="sendLabel">Send email</span></button>
+    </div>
+  </div>
+
+  <div id="resultArea"></div>
+
+</div>
+
+<script>
+const PEOPLE = [
+  {
+    id: 'ronaldo', name: 'Cristiano Ronaldo', initials: 'CR',
+    role: { en: 'Footballer', ro: 'Fotbalist', pt: 'Futebolista' },
+    color: { bg: '#E6F1FB', fg: '#0C447C' },
+    bio: {
+      en: "Cristiano Ronaldo (born 1985, Madeira) is one of the greatest footballers of all time. A five-time Ballon d'Or winner, he has played for Sporting CP, Manchester United, Real Madrid, Juventus, and now Al-Nassr, while captaining Portugal to Euro 2016 and Nations League titles. Off the pitch he runs the CR7 brand and is known for discipline, philanthropy, and a massive social media presence.",
+      ro: "Cristiano Ronaldo (n. 1985, Madeira) este unul dintre cei mai mari fotbaliști din toate timpurile. Câștigător de cinci ori al Balonului de Aur, a jucat la Sporting CP, Manchester United, Real Madrid, Juventus și acum Al-Nassr, fiind căpitanul naționalei Portugaliei la Euro 2016 și Liga Națiunilor. În afara terenului conduce brandul CR7 și este cunoscut pentru disciplină, filantropie și prezență masivă în mediul online.",
+      pt: "Cristiano Ronaldo (n. 1985, Madeira) é um dos maiores futebolistas de todos os tempos. Vencedor de cinco Bolas de Ouro, jogou no Sporting CP, Manchester United, Real Madrid, Juventus e atualmente no Al-Nassr, capitaneando Portugal nas conquistas do Euro 2016 e da Liga das Nações. Fora dos relvados, gere a marca CR7 e é conhecido pela disciplina, filantropia e enorme presença nas redes sociais."
+    },
+    persona: 'You are Sofia Almeida, polished and energetic PR manager for football icon Cristiano Ronaldo. You speak about hard work, dedication, training, family, and the CR7 brand. You are warm to fans, especially students, and slip in motivational phrases. Sign as "Sofia Almeida, CR7 Communications".',
+    quoteTheme: 'a real motivational quote by or strongly associated with Cristiano Ronaldo about hard work, dedication, dreams, or never giving up'
+  },
+  {
+    id: 'salvador', name: 'Salvador Sobral', initials: 'SS',
+    role: { en: 'Singer, Eurovision 2017', ro: 'Cantautor, Eurovision 2017', pt: 'Cantor, Eurovisão 2017' },
+    color: { bg: '#EEEDFE', fg: '#3C3489' },
+    bio: {
+      en: 'Salvador Sobral (born 1989, Lisbon) is a jazz-influenced Portuguese singer who won Eurovision 2017 with "Amar pelos dois", written by his sister Luísa. Known for an intimate, vintage style and his outspoken critique of disposable pop music, he records mostly in Portuguese and Spanish and tours with a small acoustic band.',
+      ro: 'Salvador Sobral (n. 1989, Lisabona) este un cântăreț portughez cu influențe de jazz, câștigătorul Eurovision 2017 cu „Amar pelos dois", compusă de sora sa Luísa. Cunoscut pentru stilul intim, vintage și pentru criticile aduse muzicii pop de consum, înregistrează mai ales în portugheză și spaniolă.',
+      pt: 'Salvador Sobral (n. 1989, Lisboa) é um cantor português de influência jazzística, vencedor do Festival Eurovisão 2017 com "Amar pelos dois", composta pela irmã Luísa. Conhecido pelo estilo intimista e vintage e pela crítica à música pop descartável, grava sobretudo em português e espanhol.'
+    },
+    persona: 'You are Joana Pereira, the gentle, soft-spoken manager of singer Salvador Sobral. You speak about music as feeling, defend slow art, mention jazz, melancholy, his sister Luísa, Eurovision 2017 with "Amar pelos dois", and his health journey. Warm, humble, reflective tone. Sign as "Joana Pereira, on behalf of Salvador Sobral".',
+    quoteTheme: 'a real or stylistically faithful quote by Salvador Sobral about music as feeling, the value of slow art, or his Eurovision speech "music is not fireworks, music is feeling"'
+  },
+  {
+    id: 'mariza', name: 'Mariza', initials: 'MA',
+    role: { en: 'Fado singer', ro: 'Cântăreață de fado', pt: 'Fadista' },
+    color: { bg: '#FAECE7', fg: '#712B13' },
+    bio: {
+      en: 'Mariza (born 1973, Mozambique, raised in Lisbon) is the most internationally celebrated fado singer of her generation. With a powerful voice and platinum albums, she has brought Portuguese fado to stages from Carnegie Hall to the Royal Albert Hall, while modernizing the genre with world-music influences.',
+      ro: 'Mariza (n. 1973, Mozambic, crescută la Lisabona) este cea mai apreciată cântăreață de fado a generației sale. Cu o voce puternică și albume de platină, a dus fado-ul portughez de la Carnegie Hall până la Royal Albert Hall, modernizând genul cu influențe world-music.',
+      pt: 'Mariza (n. 1973, Moçambique, criada em Lisboa) é a fadista mais aclamada internacionalmente da sua geração. Com uma voz potente e álbuns de platina, levou o fado português a palcos como o Carnegie Hall e o Royal Albert Hall, modernizando o género com influências world music.'
+    },
+    persona: 'You are Catarina Ribeiro, the elegant PR representative of fadista Mariza. You speak about fado as Portugal\'s soul, saudade, Mouraria, Amália Rodrigues as an inspiration, world tours, and her roots in Mozambique. Refined, lyrical tone. Sign as "Catarina Ribeiro, Mariza Management".',
+    quoteTheme: 'a real or stylistically authentic quote by Mariza about fado, saudade, Portuguese soul, or what singing means to her'
+  },
+  {
+    id: 'saramago', name: 'José Saramago', initials: 'JS',
+    role: { en: 'Nobel writer (1922–2010)', ro: 'Scriitor, Nobel (1922–2010)', pt: 'Escritor, Nobel (1922–2010)' },
+    color: { bg: '#F1EFE8', fg: '#444441' },
+    bio: {
+      en: 'José Saramago (1922–2010) was a Portuguese novelist who won the Nobel Prize in Literature in 1998. Known for long, comma-driven sentences and parable-like novels such as "Blindness", "The Gospel According to Jesus Christ", and "Baltasar and Blimunda", he was a lifelong communist and one of the most influential Portuguese-language writers of the 20th century.',
+      ro: 'José Saramago (1922–2010) a fost un romancier portughez, laureat al Premiului Nobel pentru Literatură în 1998. Cunoscut pentru frazele lungi cu virgule și pentru romanele sale parabolice precum „Eseu despre orbire", „Evanghelia după Iisus Hristos" și „Memorialul mănăstirii".',
+      pt: 'José Saramago (1922–2010) foi um romancista português, Prémio Nobel da Literatura em 1998. Reconhecido pelas frases longas e por romances parabólicos como "Ensaio sobre a Cegueira", "O Evangelho Segundo Jesus Cristo" e "Memorial do Convento".'
+    },
+    persona: 'You are Sérgio Letria, dignified director of the José Saramago Foundation, replying on behalf of the late Nobel laureate. Gently explain Saramago passed away in 2010 in Lanzarote but the Foundation answers in his spirit. Reference his books and his wife Pilar del Río. Sober, literary, generous tone. Sign as "Sérgio Letria, Fundação José Saramago".',
+    quoteTheme: 'a real, well-known quote by José Saramago about literature, conscience, blindness as metaphor, or human dignity (e.g. from "Blindness", "The Gospel According to Jesus Christ", or his Nobel speech)'
+  },
+  {
+    id: 'ruicosta', name: 'Rui Costa', initials: 'RC',
+    role: { en: 'Football legend, Benfica president', ro: 'Legendă a fotbalului, președinte Benfica', pt: 'Lenda do futebol, presidente do Benfica' },
+    color: { bg: '#FCEBEB', fg: '#791F1F' },
+    bio: {
+      en: 'Rui Costa (born 1972, Lisbon) is one of the most elegant Portuguese midfielders in history. A graceful playmaker for Benfica, Fiorentina, and Milan — where he won a Champions League in 2007 — he earned 94 caps for Portugal and played at three European Championships. Since 2021 he serves as president of SL Benfica.',
+      ro: 'Rui Costa (n. 1972, Lisabona) este unul dintre cei mai eleganți mijlocași portughezi din istorie. Creator de joc rafinat la Benfica, Fiorentina și Milan — unde a câștigat Liga Campionilor în 2007 — a strâns 94 de selecții la naționala Portugaliei. Din 2021 este președintele SL Benfica.',
+      pt: 'Rui Costa (n. 1972, Lisboa) é um dos médios portugueses mais elegantes da história. Maestro refinado no Benfica, Fiorentina e Milan — onde venceu a Liga dos Campeões em 2007 —, soma 94 internacionalizações por Portugal. Desde 2021 é presidente do SL Benfica.'
+    },
+    persona: 'You are Manuel Costa, formal press officer at SL Benfica replying for President Rui Costa. Mention his playing career at Benfica, Fiorentina and Milan, the 2007 Champions League, his elegance on the pitch, and his current role leading Benfica. Respectful, institutional tone. Sign as "Manuel Costa, SL Benfica Press Office".',
+    quoteTheme: 'a real or stylistically faithful quote by Rui Costa about football elegance, leadership, loyalty to a club, or Benfica'
+  },
+  {
+    id: 'davidcarreira', name: 'David Carreira', initials: 'DC',
+    role: { en: 'Pop singer & actor', ro: 'Cântăreț pop & actor', pt: 'Cantor pop e ator' },
+    color: { bg: '#FBEAF0', fg: '#72243E' },
+    bio: {
+      en: 'David Carreira (born 1991, Évry, France) is a Portuguese pop singer, actor, and son of legendary musician Tony Carreira. He broke through as a teenager, has multiple platinum albums in Portugal, and has crossed into acting and presenting, becoming one of the country\'s biggest mainstream pop stars.',
+      ro: 'David Carreira (n. 1991, Évry, Franța) este un cântăreț pop și actor portughez, fiul legendarului Tony Carreira. A debutat la adolescență, are mai multe albume de platină în Portugalia și a trecut și spre actorie, devenind una dintre cele mai mari vedete pop mainstream din țară.',
+      pt: 'David Carreira (n. 1991, Évry, França) é um cantor pop e ator português, filho do lendário Tony Carreira. Estreou-se na adolescência, tem vários álbuns de platina em Portugal e cruzou-se com a representação, tornando-se uma das maiores estrelas pop mainstream do país.'
+    },
+    persona: 'You are Tiago Mendes, the friendly, upbeat manager of pop star David Carreira. Mention his music, dance videos, his father Tony Carreira and brother Mickael, tours in Portugal and Brazil, and acting roles. Very supportive of young fans. Sign as "Tiago Mendes, David Carreira Management".',
+    quoteTheme: 'a real or stylistically faithful quote by David Carreira about chasing dreams, hard work in entertainment, family legacy, or staying true to yourself'
+  },
+  {
+    id: 'sara', name: 'Sara Sampaio', initials: 'SA',
+    role: { en: 'Supermodel', ro: 'Supermodel', pt: 'Top model' },
+    color: { bg: '#FAEEDA', fg: '#633806' },
+    bio: {
+      en: "Sara Sampaio (born 1991, Porto) is a Portuguese supermodel who has walked for Victoria's Secret, Chanel, and Givenchy, and appeared on the covers of Vogue, Elle, and Sports Illustrated. She is also a vocal advocate for ethical treatment of models in the fashion industry.",
+      ro: "Sara Sampaio (n. 1991, Porto) este un supermodel portughez care a defilat pentru Victoria's Secret, Chanel și Givenchy și a apărut pe coperțile Vogue, Elle și Sports Illustrated. Este și o voce activă pentru tratamentul etic al modelelor.",
+      pt: "Sara Sampaio (n. 1991, Porto) é uma top model portuguesa que desfilou para a Victoria's Secret, Chanel e Givenchy e foi capa da Vogue, Elle e Sports Illustrated. É também uma voz ativa pelo tratamento ético das modelos."
+    },
+    persona: 'You are Inês Faria, cosmopolitan agent of model Sara Sampaio. Mention international runways, magazine covers, her roots in Porto, her commitment to model welfare and animal causes. Polished, modern, friendly tone. Sign as "Inês Faria, IMG Models on behalf of Sara Sampaio".',
+    quoteTheme: 'a real or stylistically faithful quote by Sara Sampaio about self-confidence, body image, working hard from a small country, or speaking up in the fashion industry'
+  },
+  {
+    id: 'pessoa', name: 'Fernando Pessoa', initials: 'FP',
+    role: { en: 'Poet (1888–1935)', ro: 'Poet (1888–1935)', pt: 'Poeta (1888–1935)' },
+    color: { bg: '#E1F5EE', fg: '#085041' },
+    bio: {
+      en: 'Fernando Pessoa (1888–1935) is the towering figure of modern Portuguese literature. He wrote under dozens of "heteronyms" — invented authors with their own biographies and styles, including Alberto Caeiro, Ricardo Reis, and Álvaro de Campos — and left a famous trunk of unpublished work, including "The Book of Disquiet".',
+      ro: 'Fernando Pessoa (1888–1935) este figura tutelară a literaturii portugheze moderne. A scris sub zeci de „heteronime" — autori inventați, cu biografii și stiluri proprii, între care Alberto Caeiro, Ricardo Reis și Álvaro de Campos — și a lăsat un cufăr cu opere nepublicate, printre care „Cartea neliniștirii".',
+      pt: 'Fernando Pessoa (1888–1935) é a figura maior da literatura portuguesa moderna. Escreveu sob dezenas de "heterónimos" — autores inventados com biografias próprias, como Alberto Caeiro, Ricardo Reis e Álvaro de Campos — e deixou uma arca de obras inéditas, incluindo o "Livro do Desassossego".'
+    },
+    persona: 'You are Clara Riso, curator of Casa Fernando Pessoa museum, replying in the spirit of the poet who died in 1935. Gently note Pessoa passed away long ago in Lisbon but the museum honours him. Reference his heteronyms (Caeiro, Reis, Álvaro de Campos), Café A Brasileira, or "The Book of Disquiet". Poetic, gentle tone. Sign as "Clara Riso, Casa Fernando Pessoa".',
+    quoteTheme: 'a real, well-known quote by Fernando Pessoa or one of his heteronyms (Caeiro, Reis, Álvaro de Campos), about being many selves, sailing, dreams, or "The Book of Disquiet"'
+  },
+  {
+    id: 'paula', name: 'Paula Rego', initials: 'PR',
+    role: { en: 'Painter (1935–2022)', ro: 'Pictoriță (1935–2022)', pt: 'Pintora (1935–2022)' },
+    color: { bg: '#FAECE7', fg: '#712B13' },
+    bio: {
+      en: 'Dame Paula Rego (1935–2022) was a Portuguese-British painter famous for dark, narrative figurative works rooted in folk tales, female experience, and political themes. Long based in London, she had major retrospectives at Tate Britain and the Calouste Gulbenkian Museum, and a museum dedicated to her work — Casa das Histórias — opened in Cascais in 2009.',
+      ro: 'Dame Paula Rego (1935–2022) a fost o pictoriță portughezo-britanică, faimoasă pentru lucrări figurative narative, sumbre, inspirate de basme și de experiența feminină. Stabilită la Londra, a avut retrospective majore la Tate Britain și la Muzeul Gulbenkian, iar un muzeu dedicat operei sale — Casa das Histórias — a fost deschis la Cascais în 2009.',
+      pt: 'Dame Paula Rego (1935–2022) foi uma pintora luso-britânica célebre pelas suas obras figurativas narrativas e sombrias, enraizadas em contos populares e na experiência feminina. Radicada em Londres, teve grandes retrospetivas na Tate Britain e na Fundação Gulbenkian, e tem um museu dedicado — Casa das Histórias — inaugurado em Cascais em 2009.'
+    },
+    persona: 'You are Catarina Alfaro, director of Casa das Histórias Paula Rego in Cascais. Gently note Dame Paula passed away in 2022 in London, but the museum keeps her work alive. Mention her pastels, fairy-tale figures, women\'s rights themes, and her time in London. Thoughtful, art-historical tone. Sign as "Catarina Alfaro, Casa das Histórias Paula Rego".',
+    quoteTheme: 'a real or stylistically faithful quote by Paula Rego about painting women, fairy tales as truth, storytelling in art, or making the powerless powerful'
+  },
+  {
+    id: 'joana', name: 'Joana Vasconcelos', initials: 'JV',
+    role: { en: 'Contemporary artist', ro: 'Artistă contemporană', pt: 'Artista contemporânea' },
+    color: { bg: '#EAF3DE', fg: '#27500A' },
+    bio: {
+      en: 'Joana Vasconcelos (born 1971, Paris) is a Portuguese contemporary artist known for monumental, playful installations that often use crochet, ceramics, and everyday objects. She was the first woman and youngest artist to exhibit at the Palace of Versailles.',
+      ro: 'Joana Vasconcelos (n. 1971, Paris) este o artistă contemporană portugheză cunoscută pentru instalații monumentale și jucăușe, realizate adesea din croșet, ceramică și obiecte cotidiene. A fost prima femeie și cea mai tânără artistă care a expus la Palatul Versailles.',
+      pt: 'Joana Vasconcelos (n. 1971, Paris) é uma artista contemporânea portuguesa conhecida pelas suas instalações monumentais e lúdicas, feitas com croché, cerâmica e objetos do quotidiano. Foi a primeira mulher e a mais jovem artista a expor no Palácio de Versalhes.'
+    },
+    persona: 'You are Beatriz Salgueiro, vibrant studio manager of artist Joana Vasconcelos in Lisbon. Mention her monumental crochet works, ceramic animals, the Versailles exhibition, her atelier in Alcântara, and feminist themes. Energetic, creative tone. Sign as "Beatriz Salgueiro, Atelier Joana Vasconcelos".',
+    quoteTheme: 'a real or stylistically faithful quote by Joana Vasconcelos about turning everyday objects into art, feminism in sculpture, or art as celebration'
+  }
+];
+
+const I18N = {
+  en: {
+    title: 'Write to a Portuguese personality',
+    subtitle: 'Pick a person, write your email, and receive a reply, an assessment, and a motivational quote.',
+    from: 'From', to: 'To', subject: 'Subject',
+    placeholderSubject: 'Your subject here...',
+    placeholderMessage: 'Write your message here...',
+    placeholderFrom: 'your.name@school.com',
+    send: 'Send email',
+    sending: 'Sending... PR team is drafting a reply',
+    sent: 'Reply received',
+    pickFirst: 'Pick someone above to start writing your email.',
+    needFields: 'Please fill in your email, subject, and message.',
+    error: 'Could not reach the server. Please try again.',
+    bioHeading: 'About',
+    replyMeta: 'PR Office',
+    assessmentTitle: "Teacher's feedback on your email",
+    quoteTitle: 'A motivational quote for you',
+    metricGrammar: 'Grammar', metricTone: 'Tone', metricStructure: 'Structure', metricLevel: 'CEFR level',
+    strengths: 'What you did well', improvements: 'How to improve', encouragement: 'Encouragement'
+  },
+  ro: {
+    title: 'Scrie unei personalități portugheze',
+    subtitle: 'Alege o persoană, scrie un email și primește un răspuns, o evaluare și un citat motivațional.',
+    from: 'De la', to: 'Către', subject: 'Subiect',
+    placeholderSubject: 'Subiectul tău aici...',
+    placeholderMessage: 'Scrie mesajul tău aici...',
+    placeholderFrom: 'numele.tau@scoala.com',
+    send: 'Trimite email',
+    sending: 'Se trimite... echipa de PR redactează răspunsul',
+    sent: 'Răspuns primit',
+    pickFirst: 'Alege o persoană de mai sus pentru a începe email-ul.',
+    needFields: 'Te rugăm completează emailul, subiectul și mesajul.',
+    error: 'Nu am putut contacta serverul. Încearcă din nou.',
+    bioHeading: 'Despre',
+    replyMeta: 'Birou de presă',
+    assessmentTitle: 'Feedback de la profesor pentru emailul tău',
+    quoteTitle: 'Un citat motivațional pentru tine',
+    metricGrammar: 'Gramatică', metricTone: 'Ton', metricStructure: 'Structură', metricLevel: 'Nivel CEFR',
+    strengths: 'Ce ai făcut bine', improvements: 'Cum poți îmbunătăți', encouragement: 'Încurajare'
+  },
+  pt: {
+    title: 'Escreve a uma personalidade portuguesa',
+    subtitle: 'Escolhe alguém, escreve o teu email e recebe uma resposta, uma avaliação e uma citação motivacional.',
+    from: 'De', to: 'Para', subject: 'Assunto',
+    placeholderSubject: 'O teu assunto aqui...',
+    placeholderMessage: 'Escreve a tua mensagem aqui...',
+    placeholderFrom: 'o.teu.nome@escola.com',
+    send: 'Enviar email',
+    sending: 'A enviar... a equipa de RP está a redigir a resposta',
+    sent: 'Resposta recebida',
+    pickFirst: 'Escolhe uma pessoa acima para começar a escrever o email.',
+    needFields: 'Por favor preenche o teu email, o assunto e a mensagem.',
+    error: 'Não foi possível contactar o servidor. Tenta novamente.',
+    bioHeading: 'Sobre',
+    replyMeta: 'Gabinete de imprensa',
+    assessmentTitle: 'Comentários do professor sobre o teu email',
+    quoteTitle: 'Uma citação motivacional para ti',
+    metricGrammar: 'Gramática', metricTone: 'Tom', metricStructure: 'Estrutura', metricLevel: 'Nível CEFR',
+    strengths: 'O que fizeste bem', improvements: 'Como melhorar', encouragement: 'Incentivo'
+  }
+};
+
+let currentLang = 'en';
+let selectedPerson = null;
+let isSending = false;
+
+function emailFor(p) { return 'press@' + p.id + '.pt'; }
+
+function renderPeople() {
+  const grid = document.getElementById('peopleGrid');
+  grid.innerHTML = '';
+  PEOPLE.forEach(p => {
+    const card = document.createElement('div');
+    card.className = 'person-card' + (selectedPerson && selectedPerson.id === p.id ? ' selected' : '');
+    card.innerHTML =
+      '<div class="avatar" style="background:' + p.color.bg + ';color:' + p.color.fg + ';">' + p.initials + '</div>' +
+      '<div style="min-width:0;">' +
+      '<p class="person-name">' + p.name + '</p>' +
+      '<p class="person-role">' + p.role[currentLang] + '</p>' +
+      '</div>';
+    card.addEventListener('click', () => selectPerson(p));
+    grid.appendChild(card);
+  });
+}
+
+function selectPerson(p) {
+  selectedPerson = p;
+  renderPeople();
+  renderBio();
+  renderCompose();
+  document.getElementById('resultArea').innerHTML = '';
+  document.getElementById('statusText').innerHTML = '';
+}
+
+function renderBio() {
+  const t = I18N[currentLang];
+  const box = document.getElementById('bioBox');
+  if (!selectedPerson) {
+    box.innerHTML = '<div class="placeholder">' + t.pickFirst + '</div>';
+    return;
+  }
+  box.innerHTML =
+    '<div class="bio-card">' +
+    '<p class="bio-title">' + t.bioHeading + ' ' + selectedPerson.name + '</p>' +
+    '<div>' + selectedPerson.bio[currentLang] + '</div>' +
+    '</div>';
+}
+
+function renderCompose() {
+  const t = I18N[currentLang];
+  const card = document.getElementById('composeCard');
+  if (!selectedPerson) { card.style.display = 'none'; return; }
+  card.style.display = 'block';
+  document.getElementById('lblFrom').textContent = t.from;
+  document.getElementById('lblTo').textContent = t.to;
+  document.getElementById('lblSubject').textContent = t.subject;
+  document.getElementById('fromInput').placeholder = t.placeholderFrom;
+  document.getElementById('subjectInput').placeholder = t.placeholderSubject;
+  document.getElementById('messageInput').placeholder = t.placeholderMessage;
+  document.getElementById('sendLabel').textContent = t.send;
+  document.getElementById('toValue').textContent = selectedPerson.name + ' <' + emailFor(selectedPerson) + '>';
+}
+
+function setLang(lang) {
+  currentLang = lang;
+  document.querySelectorAll('.lang-btn').forEach(b => {
+    b.classList.toggle('active', b.dataset.lang === lang);
+  });
+  const t = I18N[lang];
+  document.getElementById('appTitle').textContent = t.title;
+  document.getElementById('appSubtitle').textContent = t.subtitle;
+  renderPeople();
+  renderBio();
+  renderCompose();
+}
+
+document.querySelectorAll('.lang-btn').forEach(btn => {
+  btn.addEventListener('click', () => setLang(btn.dataset.lang));
+});
+
+async function callApi(system, userPrompt, maxTokens) {
+  const res = await fetch('/api/chat', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      system,
+      messages: [{ role: 'user', content: userPrompt }],
+      max_tokens: maxTokens || 1000
+    })
+  });
+  const raw = await res.text();
+  let data;
+  try { data = JSON.parse(raw); } catch (e) {
+    throw new Error('Bad JSON. Status ' + res.status + ': ' + raw.slice(0, 200));
+  }
+  if (!res.ok || data.error) {
+    const msg = data.error ? (data.error.message || JSON.stringify(data.error)) : ('HTTP ' + res.status);
+    throw new Error(msg);
+  }
+  const text = (data.content || [])
+    .filter(b => b && b.type === 'text' && typeof b.text === 'string')
+    .map(b => b.text)
+    .join('\n')
+    .trim();
+  if (!text) throw new Error('Empty reply');
+  return text;
+}
+
+function langName(code) {
+  return { en: 'English', ro: 'Romanian', pt: 'European Portuguese' }[code];
+}
+
+async function generatePRReply(fromEmail, subject, message) {
+  const lang = langName(currentLang);
+  const system = selectedPerson.persona + '\n\n' +
+    'You write a reply email to a student fan, ENTIRELY in ' + lang + '. ' +
+    'Match the tone of the student\'s message and address what they actually wrote. ' +
+    'Keep the reply between 120 and 200 words. ' +
+    'Use a real email format: greeting, 2-3 short paragraphs, sign-off, and signature. ' +
+    'Never break character. Never mention you are an AI. ' +
+    'If the personality is deceased, write tactfully on behalf of the foundation or museum without pretending the person is alive. ' +
+    'Output ONLY the email body, no preface.';
+  const user =
+    'Student email:\nFrom: ' + fromEmail + '\nTo: ' + selectedPerson.name + ' <' + emailFor(selectedPerson) + '>\n' +
+    'Subject: ' + subject + '\n\n' + message + '\n\n' +
+    'Write the PR team reply now, in ' + lang + '. Email body only.';
+  return await callApi(system, user, 900);
+}
+
+async function generateAssessment(subject, message) {
+  const lang = langName(currentLang);
+  const system =
+    'You are an experienced, encouraging language teacher. ' +
+    'A student wrote an email in English (or another language) to a Portuguese celebrity. ' +
+    'You evaluate the student\'s email and respond in ' + lang + '. ' +
+    'Be warm and constructive. Never harsh. ' +
+    'Return ONLY valid JSON, no markdown fences, with this exact shape:\n' +
+    '{\n' +
+    '  "grammar": "short label like Excellent, Good, Needs work",\n' +
+    '  "tone": "short label like Polite, Casual, Too formal",\n' +
+    '  "structure": "short label like Clear, Brief, Could expand",\n' +
+    '  "cefr": "estimated CEFR level like A2, B1, B2",\n' +
+    '  "strengths": ["short bullet", "short bullet"],\n' +
+    '  "improvements": ["short concrete bullet", "short concrete bullet"],\n' +
+    '  "encouragement": "one warm sentence in ' + lang + '"\n' +
+    '}';
+  const user =
+    'Student wrote this email (subject + body):\n\n' +
+    'Subject: ' + subject + '\n\n' + message + '\n\n' +
+    'Evaluate it. Return JSON only.';
+  const raw = await callApi(system, user, 700);
+  let cleaned = raw.trim();
+  if (cleaned.startsWith('```')) {
+    cleaned = cleaned.replace(/^```(?:json)?\s*/i, '').replace(/```\s*$/, '').trim();
+  }
+  const firstBrace = cleaned.indexOf('{');
+  const lastBrace = cleaned.lastIndexOf('}');
+  if (firstBrace >= 0 && lastBrace > firstBrace) {
+    cleaned = cleaned.slice(firstBrace, lastBrace + 1);
+  }
+  return JSON.parse(cleaned);
+}
+
+async function generateQuote() {
+  const lang = langName(currentLang);
+  const system =
+    'You are a careful curator of motivational quotes. ' +
+    'Provide a short, real or stylistically authentic quote relevant to the personality and theme requested. ' +
+    'Output the quote translated into ' + lang + '. ' +
+    'Return ONLY valid JSON, no markdown fences:\n' +
+    '{\n' +
+    '  "quote": "the quote text in ' + lang + ', under 30 words",\n' +
+    '  "author": "' + selectedPerson.name + '"\n' +
+    '}';
+  const user = 'Give me ' + selectedPerson.quoteTheme + '. Return JSON only.';
+  const raw = await callApi(system, user, 400);
+  let cleaned = raw.trim();
+  if (cleaned.startsWith('```')) {
+    cleaned = cleaned.replace(/^```(?:json)?\s*/i, '').replace(/```\s*$/, '').trim();
+  }
+  const firstBrace = cleaned.indexOf('{');
+  const lastBrace = cleaned.lastIndexOf('}');
+  if (firstBrace >= 0 && lastBrace > firstBrace) {
+    cleaned = cleaned.slice(firstBrace, lastBrace + 1);
+  }
+  return JSON.parse(cleaned);
+}
+
+async function sendEmail() {
+  if (isSending) return;
+  const t = I18N[currentLang];
+  const statusEl = document.getElementById('statusText');
+  const fromEmail = document.getElementById('fromInput').value.trim();
+  const subject = document.getElementById('subjectInput').value.trim();
+  const message = document.getElementById('messageInput').value.trim();
+
+  if (!fromEmail || !subject || !message) {
+    statusEl.innerHTML = '<span class="error-box">' + t.needFields + '</span>';
+    return;
+  }
+
+  isSending = true;
+  document.getElementById('sendBtn').disabled = true;
+  statusEl.innerHTML = '<span class="loading-dots">' + t.sending + '</span>';
+  document.getElementById('resultArea').innerHTML = '';
+
+  try {
+    const [replyText, assessment, quote] = await Promise.all([
+      generatePRReply(fromEmail, subject, message),
+      generateAssessment(subject, message),
+      generateQuote()
+    ]);
+    renderAll(subject, replyText, assessment, quote);
+    statusEl.innerHTML = '<span style="color: var(--success);">✓ ' + t.sent + '</span>';
+  } catch (err) {
+    statusEl.innerHTML =
+      '<span class="error-box">' + t.error + '</span>' +
+      '<div class="debug-line">' + escapeHtml(String(err.message || err)).slice(0, 280) + '</div>';
+  } finally {
+    isSending = false;
+    document.getElementById('sendBtn').disabled = false;
+  }
+}
+
+function renderAll(subject, replyText, assessment, quote) {
+  const t = I18N[currentLang];
+  const locale = currentLang === 'en' ? 'en-GB' : (currentLang === 'ro' ? 'ro-RO' : 'pt-PT');
+  const now = new Date().toLocaleString(locale, { dateStyle: 'medium', timeStyle: 'short' });
+
+  let html = '';
+  html +=
+    '<div class="reply-card">' +
+      '<div class="reply-header">' +
+        '<div class="avatar" style="background:' + selectedPerson.color.bg + ';color:' + selectedPerson.color.fg + ';">' +
+          selectedPerson.initials +
+        '</div>' +
+        '<div>' +
+          '<p class="reply-from">Re: ' + escapeHtml(subject) + '</p>' +
+          '<p class="reply-meta">' + selectedPerson.name + ' · ' + t.replyMeta + ' · ' + now + '</p>' +
+        '</div>' +
+      '</div>' +
+      '<div class="reply-body">' + escapeHtml(replyText) + '</div>' +
+    '</div>';
+
+  if (assessment) {
+    html +=
+      '<div class="feedback-card">' +
+        '<p class="section-header">📝 ' + t.assessmentTitle + '</p>' +
+        '<div class="feedback-grid">' +
+          metricCard(t.metricGrammar, assessment.grammar) +
+          metricCard(t.metricTone, assessment.tone) +
+          metricCard(t.metricStructure, assessment.structure) +
+          metricCard(t.metricLevel, assessment.cefr) +
+        '</div>' +
+        feedbackList(t.strengths, assessment.strengths) +
+        feedbackList(t.improvements, assessment.improvements) +
+        (assessment.encouragement ?
+          '<div class="feedback-section"><p class="title">' + t.encouragement + '</p><p>' +
+          escapeHtml(assessment.encouragement) + '</p></div>' : '') +
+      '</div>';
+  }
+
+  if (quote) {
+    html +=
+      '<div class="quote-card">' +
+        '<p class="section-header" style="color: var(--amber); font-family: var(--font);">✨ ' + t.quoteTitle + '</p>' +
+        '<p class="quote-text">"' + escapeHtml(quote.quote || '') + '"</p>' +
+        '<p class="quote-author">— ' + escapeHtml(quote.author || selectedPerson.name) + '</p>' +
+      '</div>';
+  }
+
+  document.getElementById('resultArea').innerHTML = html;
+}
+
+function metricCard(label, value) {
+  return '<div class="feedback-metric"><div class="label">' + escapeHtml(label) +
+    '</div><div class="value">' + escapeHtml(value || '—') + '</div></div>';
+}
+
+function feedbackList(title, items) {
+  if (!Array.isArray(items) || items.length === 0) return '';
+  let html = '<div class="feedback-section"><p class="title">' + escapeHtml(title) + '</p><ul>';
+  items.forEach(i => { html += '<li>' + escapeHtml(i) + '</li>'; });
+  html += '</ul></div>';
+  return html;
+}
+
+function escapeHtml(s) {
+  return String(s).replace(/[&<>"']/g, c =>
+    ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' }[c])
+  );
+}
+
+document.getElementById('sendBtn').addEventListener('click', sendEmail);
+
+renderPeople();
+renderBio();
+</script>
+</body>
+</html>
